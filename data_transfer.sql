@@ -1,15 +1,17 @@
 
 use Reports
 
-truncate table Dates          --  0.008
-truncate table Movement       --127.07
-truncate table PriceList      -- 17.289
-truncate table Prices         --  0.008
-truncate table Sales          --  1.195
-truncate table Sales_Receipt  -- 25.953
-truncate table Shops          --  0.008
-truncate table SKU            --144.653
-truncate table Stoks          -- 69.609
+truncate table Dates          --    0.008
+truncate table Movement       --  127.070
+truncate table PriceList      --   17.289
+truncate table Prices         --    0.008
+truncate table Sales          --    1.195
+truncate table Sales_Receipt  --   25.953
+truncate table Shops          --    0.008
+truncate table SKU            --  144.653
+truncate table Stoks          --   69.609
+------------------------------------------------
+                              --  385.793
 
 
 insert into Dates select * from [192.168.138.129].Reports.dbo.Dates
