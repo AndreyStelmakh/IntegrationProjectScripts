@@ -11,6 +11,8 @@ drop table Shops
 drop table SKU
 drop table Stoks
 
+if Object_id('dbo.Locations') is not null
+  drop table dbo.Locations;
 
 if object_id('Dates', 'U') is null
 begin
@@ -25,26 +27,32 @@ Go
 if object_id('Movement', 'U') is null
 begin
 
-    CREATE TABLE [dbo].[Movement](
+  CREATE TABLE [dbo].[Movement](
     [ID_Doc] uniqueidentifier NULL,
-    [Date] [datetime2](7) NULL,
+    [Date] [datetime2](4) NULL,
     [Date_Day] [date] NULL,
     [Doc_Number] [nvarchar](20) NULL,
     [Doc_Str] [nvarchar](60) NULL,
     [ID_Shop] uniqueidentifier NULL,
     [ID_SKU] uniqueidentifier NULL,
     [Kol] [int] NULL,
-    [ID_Artikul] uniqueidentifier NULL,
-    [ID_Shop_2] [nvarchar](60) NULL
+    [ID_Shop_2] uniqueidentifier NULL
   ) ON [PRIMARY]
+
+
+
 
 end;
 GO
 
+
+
+
+
 CREATE TABLE [dbo].[PriceList](
 	[ID_SKU] uniqueidentifier NULL,
 	[ID_Price] uniqueidentifier NULL,
-	[Date] [datetime2](7) NULL,
+	[Date] [datetime2](4) NULL,
 	[Price] [numeric](18,4) NULL,
 	[Date_Day] [date] NULL
 ) ON [PRIMARY]
@@ -57,7 +65,7 @@ CREATE TABLE [dbo].[Prices](
 GO
 
 CREATE TABLE [dbo].[Sales](
-	[Date] [datetime2](7) NULL,
+	[Date] [datetime2](4) NULL,
 	[ID_Shop] uniqueidentifier NULL,
 	[ID_SKU] uniqueidentifier NULL,
 	[Sum] [numeric](18, 4) NULL,
@@ -67,27 +75,29 @@ GO
 
 CREATE TABLE [dbo].[Sales_Receipt](
 	[ID_Rec] uniqueidentifier NULL,
-	[Date] [datetime2](7) NULL,
+	[Date] [datetime2](4) NULL,
 	[Rec_Number] [nvarchar](20) NULL,
 	[ID_Shop] uniqueidentifier NULL,
 	[Nonce] [int] NULL,
 	[ID_SKU] uniqueidentifier NULL,
 	[Kol] [int] NULL,
 	[Sum] numeric(18, 4) NULL,
-	[ID_Articul] uniqueidentifier NULL,
 	[Sum_Zakup] numeric(18, 4) NULL,
 	[Date_Day] [date] NULL
 ) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[Shops](
-	[ID_Shop] uniqueidentifier NULL,
-	[Name] [nvarchar](60) NULL
+	[ID_Shop] [uniqueidentifier] NOT NULL,
+	[Name] [nvarchar](60) NULL,
+ CONSTRAINT [PK_Shops] PRIMARY KEY CLUSTERED 
+(
+	[ID_Shop] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
-GO
 
 CREATE TABLE [dbo].[SKU](
-	[ID_SKU] uniqueidentifier NULL,
+	[ID_SKU] uniqueidentifier NOT NULL,
 	[ID_Articul] uniqueidentifier NULL,
 	[Name] [nvarchar](60) NULL,
 	[Articul] [nvarchar](60) NULL,
@@ -114,18 +124,59 @@ CREATE TABLE [dbo].[SKU](
 	[Prop_Strana] [nvarchar](80) NULL,
 	[Prop_Strukt] [nvarchar](80) NULL,
 	[Prop_Color] [nvarchar](80) NULL,
-	[Prop_PervData] datetime2(7) NULL,
+	[Prop_PervData] datetime2(4) NULL,
 	[Prop_Proizvoditel] [nvarchar](80) NULL,
-	[Barcode] [nvarchar](13) NULL
+	[Barcode] [nvarchar](13) NULL,
+
 ) ON [PRIMARY]
+GO
+
+CREATE UNIQUE CLUSTERED INDEX [PK_SKU] ON [dbo].[SKU]
+(
+	[ID_SKU] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
 GO
 
 CREATE TABLE [dbo].[Stoks](
 	[ID_Shop] uniqueidentifier NULL,
 	[ID_SKU] uniqueidentifier NULL,
-	[ID_Articul] uniqueidentifier NULL,
 	[Kol] [int] NULL,
-	[Date] [datetime2](7) NULL
+	[Date] [datetime2](4) NULL
 ) ON [PRIMARY]
 GO
 
+-- локация это так называемый "крючок" (или полка) -- единица хранилища,
+-- на которой лежат товары одной группы (пока не ясно, что может образовывать группу: Артикул или SKU)
+CREATE TABLE [dbo].[Locations](
+	[LocationID] [uniqueidentifier] NOT NULL,
+	[ID_Shop] [uniqueidentifier] NOT NULL,
+	[Properties] [xml] NULL,  -- распределение-размерная горка в процентах,
+                            -- предельная емкость в штуках
+  [Priority] int NULL       -- приоритет заполнения локации в пределах магазина
+ CONSTRAINT [PK_Locations] PRIMARY KEY CLUSTERED 
+(
+	[LocationID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Locations] ADD  CONSTRAINT [DF_Locations_LocationID]  DEFAULT (newid()) FOR [LocationID]
+GO
+
+
+ALTER TABLE [dbo].[Movement]  WITH CHECK ADD  CONSTRAINT [FK_Movement_Shops] FOREIGN KEY([ID_Shop])
+REFERENCES [dbo].[Shops] ([ID_Shop])
+
+ALTER TABLE [dbo].[Movement] CHECK CONSTRAINT [FK_Movement_Shops]
+
+ALTER TABLE [dbo].[Movement]  WITH CHECK ADD  CONSTRAINT [FK_Movement_Shops2] FOREIGN KEY([ID_Shop_2])
+REFERENCES [dbo].[Shops] ([ID_Shop])
+
+ALTER TABLE [dbo].[Movement] CHECK CONSTRAINT [FK_Movement_Shops2]
+
+ALTER TABLE [dbo].[Movement]  WITH CHECK ADD  CONSTRAINT [FK_Movement_SKU] FOREIGN KEY([ID_SKU])
+REFERENCES [dbo].[SKU] ([ID_SKU])
+
+ALTER TABLE [dbo].[Movement] CHECK CONSTRAINT [FK_Movement_SKU]
+
+Go
