@@ -135,8 +135,6 @@ CREATE TABLE [dbo].[SKU](
 	[Prop_PervData] datetime2(4) NULL,
 	[Prop_Proizvoditel] [nvarchar](80) NULL,
 	[Barcode] [nvarchar](13) NULL,
-	[A_Color] [nvarchar](100) NULL,
-	[A_Size] [nvarchar](50) NULL,
 
 ) ON [PRIMARY]
 GO
@@ -170,17 +168,9 @@ CREATE TABLE [dbo].[Locations](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[SizeAllocations](
-	[ID_Articul] [uniqueidentifier] NOT NULL,
-	[Color] [nvarchar](100) NOT NULL,
-	[Allocation] [xml] NOT NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-
-
 ALTER TABLE [dbo].[Locations] ADD  CONSTRAINT [DF_Locations_LocationID]  DEFAULT (newid()) FOR [LocationID]
 GO
+
 
 ALTER TABLE [dbo].[Movement]  WITH CHECK ADD  CONSTRAINT [FK_Movement_Shops] FOREIGN KEY([ID_Shop])
 REFERENCES [dbo].[Shops] ([ID_Shop])
