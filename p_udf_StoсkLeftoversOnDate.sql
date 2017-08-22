@@ -1,6 +1,6 @@
 
 
-create or alter function dbo.udfStockLeftoversOnDate
+create or alter function dbo.udf_StockLeftoversOnDate
 ( @date datetime2 = null )
 returns @t table ( ID_Shop uniqueidentifier,
                    ID_SKU uniqueidentifier,
@@ -9,7 +9,7 @@ as
 
 begin
 
-  set @date = isnull(@date, GetDate()+1);
+  set @date = isnull(@date, GetDate());
 
   insert into @t
   select ID_Shop = ID_Shop,
