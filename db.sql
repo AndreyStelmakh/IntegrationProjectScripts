@@ -31,15 +31,6 @@ N'<?xml version="1.0" encoding="UTF-16"?>
 if Object_id('dbo.Locations') is not null
   drop table dbo.Locations;
 
-if object_id('Dates', 'U') is null
-begin
-
-  CREATE TABLE [dbo].[Dates](
-    [Date_Day] [date] NOT NULL
-  ) ON [PRIMARY]
-
-end;
-Go
 
 if object_id('Movement', 'U') is null
 begin
@@ -56,9 +47,6 @@ begin
     [ID_Shop_2] uniqueidentifier NULL
   ) ON [PRIMARY]
 
-
-
-
 end;
 GO
 
@@ -72,8 +60,13 @@ CREATE TABLE [dbo].[PriceList](
 ) ON [PRIMARY]
 GO
 
-
-
+CREATE NONCLUSTERED INDEX [IX_ID_Price_ID_SKU_Date] ON [dbo].[PriceList]
+(
+	[ID_Price] ASC,
+	[ID_SKU] ASC,
+	[Date] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
 
 CREATE TABLE [dbo].[Prices](
 	[ID_Price] [uniqueidentifier] NOT NULL,
@@ -164,13 +157,13 @@ CREATE UNIQUE CLUSTERED INDEX [PK_SKU] ON [dbo].[SKU]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90) ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[Stoks](
-	[ID_Shop] uniqueidentifier NULL,
-	[ID_SKU] uniqueidentifier NULL,
-	[Kol] [int] NULL,
-	[Date] [datetime2](4) NULL
-) ON [PRIMARY]
-GO
+--CREATE TABLE [dbo].[Stoks](
+--	[ID_Shop] uniqueidentifier NULL,
+--	[ID_SKU] uniqueidentifier NULL,
+--	[Kol] [int] NULL,
+--	[Date] [datetime2](4) NULL
+--) ON [PRIMARY]
+--GO
 
 -- локация это так называемый "крючок" (или полка) -- единица хранилища,
 -- на которой лежат товары одной группы (пока не ясно, что может образовывать группу: Артикул или SKU)
@@ -220,14 +213,6 @@ ALTER TABLE [dbo].[Movement] CHECK CONSTRAINT [FK_Movement_Shops2]
 ALTER TABLE [dbo].[Movement]  WITH CHECK ADD  CONSTRAINT [FK_Movement_SKU] FOREIGN KEY([ID_SKU])
 REFERENCES [dbo].[SKU] ([ID_SKU])
 ALTER TABLE [dbo].[Movement] CHECK CONSTRAINT [FK_Movement_SKU]
-
-ALTER TABLE [dbo].[Stoks]  WITH CHECK ADD  CONSTRAINT [FK_Stoks_Shops] FOREIGN KEY([ID_Shop])
-REFERENCES [dbo].[Shops] ([ID_Shop])
-ALTER TABLE [dbo].[Stoks] CHECK CONSTRAINT [FK_Stoks_Shops]
-
-ALTER TABLE [dbo].[Stoks]  WITH CHECK ADD  CONSTRAINT [FK_Stoks_SKU] FOREIGN KEY([ID_SKU])
-REFERENCES [dbo].[SKU] ([ID_SKU])
-ALTER TABLE [dbo].[Stoks] CHECK CONSTRAINT [FK_Stoks_SKU]
 
 ALTER TABLE [dbo].[Sales_Receipt]  WITH CHECK ADD  CONSTRAINT [FK_Sales_Receipt_Shops] FOREIGN KEY([ID_Shop])
 REFERENCES [dbo].[Shops] ([ID_Shop])
