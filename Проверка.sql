@@ -47,4 +47,5 @@ where Price is null
 select SKU_Count = @SKU_Count,
        SKU_wo_price = @SKU_wo_price,
        SKU_wo_purchase_price = @SKU_wo_purchase_price,
-       SKU_wo_retail_price = @SKU_wo_retail_price;
+       SKU_wo_retail_price = @SKU_wo_retail_price,
+       (select max([Date]) from dbo.Movement) as [Max дата движений];
