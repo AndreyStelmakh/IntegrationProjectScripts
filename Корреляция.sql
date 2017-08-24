@@ -9,9 +9,9 @@ insert into @i1 values(3, 3);
 insert into @i1 values(4, 1);
 insert into @i1 values(5, 0);
 insert into @i2 values(1, 0);
-insert into @i2 values(2, 2);
-insert into @i2 values(3, 2);
-insert into @i2 values(4, 1);
+insert into @i2 values(2,-2);
+insert into @i2 values(3,-3);
+insert into @i2 values(4,-1);
 insert into @i2 values(5, 1);
 
 declare @i1_avg float,
@@ -32,7 +32,8 @@ select  @i1_avg,
 
 declare @corr float;
 
-select @corr = sum((isnull(i1.v, 0) - @i1_avg) * (isnull(i2.v, 0) - @i2_avg)) / (@i1_std * @i2_std * (@n - 1))
+select @corr = (sum((isnull(i1.v, 0) - @i1_avg) * (isnull(i2.v, 0) - @i2_avg)) / (@n - 1))
+                / (@i1_std * @i2_std )
 from @i1 i1
   full join @i2 i2 on i1.k = i2.k;
 
