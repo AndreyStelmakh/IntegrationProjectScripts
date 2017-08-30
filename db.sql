@@ -180,14 +180,14 @@ CREATE TABLE [dbo].[Locations](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-CREATE TABLE [dbo].[SizeAllocations](
-	[ID_Shop] [uniqueidentifier] NOT NULL,
-	[ID_Articul] [uniqueidentifier] NOT NULL,
-	[Color] [nvarchar](100) NOT NULL,
-  [HoldingCapacity] int NOT NULL,
-	[Allocation] [xml] NOT NULL
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
+--CREATE TABLE [dbo].[SizeAllocations](
+--	[ID_Shop] [uniqueidentifier] NOT NULL,
+--	[ID_Articul] [uniqueidentifier] NOT NULL,
+--	[Color] [nvarchar](100) NOT NULL,
+--  [HoldingCapacity] int NOT NULL,
+--	[Allocation] [xml] NOT NULL
+--) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+--GO
 
 --CREATE TABLE [dbo].[HoldingCapacitiesByShopArticulColor](
 --	[ID_Shop] uniqueidentifier NOT NULL,
@@ -196,6 +196,12 @@ GO
 --	[HoldingCapacity] [int] NOT NULL
 --) ON [PRIMARY]
 --GO
+
+CREATE TABLE [Reports].[_Deltas](
+	[ID_Shop] [uniqueidentifier] NOT NULL,
+	[ID_SKU] [uniqueidentifier] NOT NULL,
+	[Delta] [int] NULL
+) ON [PRIMARY]
 
 
 
