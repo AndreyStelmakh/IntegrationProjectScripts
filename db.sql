@@ -203,6 +203,15 @@ CREATE TABLE [Reports].[_Deltas](
 	[Delta] [int] NULL
 ) ON [PRIMARY]
 
+CREATE TABLE dbo.[Orders](
+	OrderNumber nvarchar(25),
+  [Date] datetime2(4),
+  ID_SKU uniqueidentifier,
+  ID_Shop uniqueidentifier,
+	Quantity integer,
+	PurchasePrice decimal(18,4),
+) ON [PRIMARY]
+
 
 
 ALTER TABLE [dbo].[Locations] ADD  CONSTRAINT [DF_Locations_LocationID]  DEFAULT (newid()) FOR [LocationID]
