@@ -1,54 +1,49 @@
 USE [Reports]
 GO
 
-drop table Dates
-drop table Movement
-drop table PriceList
-drop table Prices
-drop table Sales
-drop table Sales_Receipt
-drop table Shops
-drop table SKU
-drop table Stoks
+--drop table Movement
+--drop table PriceList
+--drop table Prices
+--drop table Sales
+--drop table Sales_Receipt
+--drop table Shops
+--drop table SKU
+Go
 
-CREATE XML SCHEMA COLLECTION AllocationSchemaCollection AS  
-N'<?xml version="1.0" encoding="UTF-16"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:element name="allocation">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element maxOccurs="unbounded" name="item">
-					<xs:complexType>
-						<xs:attribute name="size" type="xs:string" use="required" />
-						<xs:attribute name="percentage" type="xs:unsignedByte" use="required" />
-					</xs:complexType>
-				</xs:element>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-</xs:schema>'
+--CREATE XML SCHEMA COLLECTION AllocationSchemaCollection AS  
+--N'<?xml version="1.0" encoding="UTF-16"?>
+--<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+--	<xs:element name="allocation">
+--		<xs:complexType>
+--			<xs:sequence>
+--				<xs:element maxOccurs="unbounded" name="item">
+--					<xs:complexType>
+--						<xs:attribute name="size" type="xs:string" use="required" />
+--						<xs:attribute name="percentage" type="xs:unsignedByte" use="required" />
+--					</xs:complexType>
+--				</xs:element>
+--			</xs:sequence>
+--		</xs:complexType>
+--	</xs:element>
+--</xs:schema>'
 
 if Object_id('dbo.Locations') is not null
   drop table dbo.Locations;
 
 
-if object_id('Movement', 'U') is null
-begin
-
-  CREATE TABLE [dbo].[Movement](
-    [ID_Doc] uniqueidentifier NULL,
-    [Date] [datetime2](4) NULL,
-    [Date_Day] [date] NULL,
-    [Doc_Number] [nvarchar](20) NULL,
-    [Doc_Str] [nvarchar](60) NULL,
-    [ID_Shop] uniqueidentifier NULL,
-    [ID_SKU] uniqueidentifier NULL,
-    [Kol] [int] NULL,
-    [ID_Shop_2] uniqueidentifier NULL
-  ) ON [PRIMARY]
-
-end;
-GO
+CREATE TABLE [dbo].[Movement](
+  [ID_Doc] uniqueidentifier NULL,
+  [Date] [datetime2](4) NULL,
+  [Date_Day] [date] NULL,
+  [Doc_Number] [nvarchar](20) NULL,
+  [Doc_Str] [nvarchar](60) NULL,
+  [ID_Shop] uniqueidentifier NULL,
+  [ID_SKU] uniqueidentifier NULL,
+  [Kol] [int] NULL,
+  [ID_Shop_2] uniqueidentifier NULL,
+  [Order] nvarchar(15),
+) ON [PRIMARY]
+Go
 
 
 CREATE TABLE [dbo].[PriceList](
@@ -180,29 +175,12 @@ CREATE TABLE [dbo].[Locations](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
---CREATE TABLE [dbo].[SizeAllocations](
---	[ID_Shop] [uniqueidentifier] NOT NULL,
---	[ID_Articul] [uniqueidentifier] NOT NULL,
---	[Color] [nvarchar](100) NOT NULL,
---  [HoldingCapacity] int NOT NULL,
---	[Allocation] [xml] NOT NULL
---) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
---GO
-
---CREATE TABLE [dbo].[HoldingCapacitiesByShopArticulColor](
---	[ID_Shop] uniqueidentifier NOT NULL,
---	[ID_Articul] uniqueidentifier NOT NULL,
---  [Color] nvarchar(30) NOT NULL,
---	[HoldingCapacity] [int] NOT NULL
---) ON [PRIMARY]
---GO
-
 CREATE TABLE [Reports].[_Deltas](
 	[ID_Shop] [uniqueidentifier] NOT NULL,
 	[ID_SKU] [uniqueidentifier] NOT NULL,
 	[Delta] [int] NULL
 ) ON [PRIMARY]
-
+Go
 CREATE TABLE dbo.[Orders](
 	OrderNumber nvarchar(25),
   [Date] datetime2(4),
@@ -211,8 +189,30 @@ CREATE TABLE dbo.[Orders](
 	Quantity integer,
 	PurchasePrice decimal(18,4),
 ) ON [PRIMARY]
+Go
+CREATE TABLE [dbo].[_Report1](
+	[Year] [smallint] NULL,
+	[WeekNumber] [smallint] NULL,
+	[ID_SKU] [uniqueidentifier] NULL,
+	[ReportType] [nvarchar](15) NULL,
+	[Value] [decimal](9, 1) NULL,
+	[Articul] [nvarchar](60) NULL,
+	[A_Color] [nvarchar](100) NULL
+) ON [PRIMARY]
+GO
 
-
+CREATE TABLE Reports.[_Sales](
+	[Year] [smallint] NULL,
+	[WeekNumber] [smallint] NULL,
+	[ID_Shop] [uniqueidentifier] NULL,
+	[ID_SKU] [uniqueidentifier] NOT NULL,
+	[RetailPrice] [decimal](18, 4) NULL,
+	[PurchasePrice] [decimal](18, 4) NULL,
+	[Leftover] [int] NULL,
+  NSales int null,
+  LeftoverMargin as Leftover * (RetailPrice - PurchasePrice)
+) ON [PRIMARY]
+GO
 
 ALTER TABLE [dbo].[Locations] ADD  CONSTRAINT [DF_Locations_LocationID]  DEFAULT (newid()) FOR [LocationID]
 GO

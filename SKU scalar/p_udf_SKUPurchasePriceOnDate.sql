@@ -18,36 +18,28 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE  FUNCTION dbo.udf_RetailPricesOnDate (
+alter  FUNCTION dbo.udf_SKUPurchasePriceOnDate (
+  @ID_SKU uniqueidentifier,
   @Date datetime2(4)
 )
-RETURNS 
-@result TABLE (
- -- [Date] datetime2(4),
-  ID_SKU uniqueidentifier,
-  Price numeric(18, 4)
-)
+RETURNS decimal(18, 4)
 AS
 BEGIN
 
   declare @ID_Price_Retail uniqueidentifier = '8374421B-7199-11E6-B63C-0002C9E8F1B0';
   declare @ID_Price_Purchase uniqueidentifier = 'F1880CC3-DBF7-11E6-8074-00155D63110F';
 
-  insert into @result
-  select --pl.[Date],
-         pl.ID_SKU,
-         pl.Price
-  from dbo.PriceList pl
-    inner join
-    ( select ID_SKU, max([Date]) as max_date from dbo.PriceList
-      where ID_Price = @ID_Price_Retail
-        and [Date] < @Date
-      group by ID_SKU ) ps on ps.ID_SKU = pl.ID_SKU
-                          and ps.max_date = pl.[Date]
-  where pl.ID_Price = @ID_Price_Retail;
+  declare @Price decimal(18, 4);
 
+  select top(1) @Price = Price
+  from dbo.PriceList
+  where ID_Price = @ID_Price_Purchase
+    and [Date] < @Date
+    and ID_SKU = @ID_SKU
+    and ID_Price = @ID_Price_Purchase
+  order by [Date] desc;
 
-	RETURN 
+	return @Price
 END
 GO
 

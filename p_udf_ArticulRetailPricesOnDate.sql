@@ -18,12 +18,12 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE  FUNCTION dbo.udf_RetailPricesOnDate (
+CREATE or alter FUNCTION dbo.udf_ArticulRetailPricesOnDate (
   @Date datetime2(4)
 )
 RETURNS 
 @result TABLE (
- -- [Date] datetime2(4),
+  [Date] datetime2(4),
   ID_SKU uniqueidentifier,
   Price numeric(18, 4)
 )
@@ -34,7 +34,7 @@ BEGIN
   declare @ID_Price_Purchase uniqueidentifier = 'F1880CC3-DBF7-11E6-8074-00155D63110F';
 
   insert into @result
-  select --pl.[Date],
+  select pl.[Date],
          pl.ID_SKU,
          pl.Price
   from dbo.PriceList pl
