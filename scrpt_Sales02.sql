@@ -27,19 +27,20 @@ using( select wd.[Year],
               wd.[Week],
               sl.ID_Shop,
               sl.ID_SKU,
-              NSales = -sl.Quantity
+              NSales = -sl.Quantity,
+              SumSales = -sl.[Sum]
        from @WeekDates wd
-         outer apply dbo.udf_SKUsSalesOnDate(wd.BeginDate) sl ) as sc
+         outer apply dbo.udf_SKUsSalesForPeriod(wd.BeginDate, wd.EndDate) sl ) as sc
 on( tg.Year = sc.Year
 and tg.[WeekNumber] = sc.[Week]
 and tg.ID_Shop = sc.ID_Shop
 and tg.ID_SKU = sc.ID_SKU )
 
 when matched then
-  update set tg.NSales = sc.NSales
+  update set tg.NSales = sc.NSales, tg.SumSales = sc.SumSales
 when not matched then
-  insert( Year, WeekNumber, ID_Shop, ID_SKU, NSales )
-  values( sc.Year, sc.Week, sc.ID_Shop, sc.ID_SKU, sc.NSales );
+  insert( Year, WeekNumber, ID_Shop, ID_SKU, NSales, SumSales )
+  values( sc.Year, sc.Week, sc.ID_Shop, sc.ID_SKU, sc.NSales, sc.SumSales );
    
 merge Reports.[_Sales] as tg
 using( select wd.[Year],

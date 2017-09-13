@@ -18,7 +18,7 @@ GO
 -- Create date: <Create Date, ,>
 -- Description:	<Description, ,>
 -- =============================================
-CREATE FUNCTION dbo.udf_IsCurrentCollection 
+CREATE FUNCTION dbo.udf_IsCurrentSeason
 (
 	@date datetime2(4)
 )

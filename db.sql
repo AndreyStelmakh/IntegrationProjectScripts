@@ -42,6 +42,7 @@ CREATE TABLE [dbo].[Movement](
   [Kol] [int] NULL,
   [ID_Shop_2] uniqueidentifier NULL,
   [Order] nvarchar(15),
+	[Sum] [decimal](18, 4) NULL
 ) ON [PRIMARY]
 Go
 
@@ -210,7 +211,8 @@ CREATE TABLE Reports.[_Sales](
 	[PurchasePrice] [decimal](18, 4) NULL,
 	[Leftover] [int] NULL,
   NSales int null,
-  LeftoverMargin as Leftover * (RetailPrice - PurchasePrice)
+  LeftoverMargin as Leftover * (RetailPrice - PurchasePrice),
+  SalesSum decimal(18, 4)
 ) ON [PRIMARY]
 GO
 
