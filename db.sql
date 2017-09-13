@@ -202,7 +202,7 @@ CREATE TABLE [dbo].[_Report1](
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE Reports.[_Sales](
+CREATE TABLE dbo.[_Report2](
 	[Year] [smallint] NULL,
 	[WeekNumber] [smallint] NULL,
 	[ID_Shop] [uniqueidentifier] NULL,
@@ -212,9 +212,25 @@ CREATE TABLE Reports.[_Sales](
 	[Leftover] [int] NULL,
   NSales int null,
   LeftoverMargin as Leftover * (RetailPrice - PurchasePrice),
+  Discount as PurchasePrice * NSales - SalesSum,
   SalesSum decimal(18, 4)
 ) ON [PRIMARY]
 GO
+
+
+
+CREATE NONCLUSTERED INDEX [IX_Movement_Doc_Str_incl_Date_ID_SKU_Kol] ON [dbo].[Movement]
+(
+	[ID_SKU] ASC,
+  [Doc_Str] ASC
+)
+INCLUDE (
+  [Date],
+	[Kol]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+
+
 
 ALTER TABLE [dbo].[Locations] ADD  CONSTRAINT [DF_Locations_LocationID]  DEFAULT (newid()) FOR [LocationID]
 GO

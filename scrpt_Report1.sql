@@ -1,5 +1,11 @@
 
 
+create procedure dbo.scrpt_Report1
+as
+
+-- Sales rate
+--------------------------------------------------
+
 declare @Shops table(ID uniqueidentifier);
 insert into @Shops values('2CE04A70-3ACC-11E7-80DE-000C2915D7B8');
 insert into @Shops values('CB2B30C2-CB24-11E6-941E-000C29ECCF5C');

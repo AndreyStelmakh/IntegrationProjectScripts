@@ -1,11 +1,11 @@
 
 
-create or alter function dbo.udf_ArticulsStockLeftoversOnDate
+alter  function dbo.udf_ArticulsStockLeftoversOnDate
 ( @date datetime2 = null,
   @ID_Shop uniqueidentifier = null )
 returns @t table ( ID_Shop uniqueidentifier,
-                   Articul uniqueidentifier,
-                   A_Color nvarchar(20),
+                   Articul nvarchar(60),
+                   A_Color nvarchar(100),
                    Quantity integer )
 as
 

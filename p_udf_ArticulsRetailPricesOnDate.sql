@@ -18,7 +18,7 @@ GO
 -- Create date: <Create Date,,>
 -- Description:	<Description,,>
 -- =============================================
-CREATE or alter FUNCTION dbo.udf_ArticulsRetailPricesOnDate (
+CREATE FUNCTION dbo.udf_ArticulsRetailPricesOnDate (
   @Date datetime2(4)
 )
 RETURNS 

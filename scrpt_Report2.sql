@@ -1,5 +1,8 @@
 
-use Reports
+
+create procedure dbo.scrpt_Report2
+as
+--use Reports
 
 declare @WeekDates table( [Year] smallint, [Week] smallint, BeginDate datetime2(4), EndDate datetime2(4));
 
@@ -20,15 +23,15 @@ insert into @ShopsAndStores select * from @Shops;
 insert into @ShopsAndStores values('8374421C-7199-11E6-B63C-0002C9E8F1B0');
 --------------------------------------------------------------------------------
 
-truncate table Reports._Sales
+truncate table dbo._Report2
 
-merge Reports.[_Sales] as tg
+merge dbo.[_Report2] as tg
 using( select wd.[Year],
               wd.[Week],
               sl.ID_Shop,
               sl.ID_SKU,
               NSales = -sl.Quantity,
-              SumSales = -sl.[Sum]
+              SalesSum = -sl.[SalesSum]
        from @WeekDates wd
          outer apply dbo.udf_SKUsSalesForPeriod(wd.BeginDate, wd.EndDate) sl ) as sc
 on( tg.Year = sc.Year
@@ -37,12 +40,12 @@ and tg.ID_Shop = sc.ID_Shop
 and tg.ID_SKU = sc.ID_SKU )
 
 when matched then
-  update set tg.NSales = sc.NSales, tg.SumSales = sc.SumSales
+  update set tg.NSales = sc.NSales, tg.SalesSum = sc.SalesSum
 when not matched then
-  insert( Year, WeekNumber, ID_Shop, ID_SKU, NSales, SumSales )
-  values( sc.Year, sc.Week, sc.ID_Shop, sc.ID_SKU, sc.NSales, sc.SumSales );
+  insert( Year, WeekNumber, ID_Shop, ID_SKU, NSales, SalesSum )
+  values( sc.Year, sc.Week, sc.ID_Shop, sc.ID_SKU, sc.NSales, sc.SalesSum );
    
-merge Reports.[_Sales] as tg
+merge dbo.[_Report2] as tg
 using( select wd.[Year],
               wd.[Week],
               sl.ID_Shop,
@@ -76,6 +79,6 @@ from @WeekDates wd
 update s
 set RetailPrice = p.RetailPrice,
     PurchasePrice = p.PurchasePrice
-from Reports._Sales s
+from dbo._Report2 s
   inner join @Prices p on p.Year = s.Year and p.Week = s.WeekNumber and p.ID_SKU = s.ID_SKU
 --insert into Reports._Sales
