@@ -18,6 +18,8 @@ begin
          Quantity = sum(Kol)
   from dbo.Movement
   where [Date] <= @date
+    -- чек  ћ не нужно учитывать, т.к. этот тип учтЄн в типе ќтчетќ–озничныхѕродажах
+    and Doc_Str <> '„ек  ћ (расход)'
   group by ID_Shop, ID_SKU;
 
   return;

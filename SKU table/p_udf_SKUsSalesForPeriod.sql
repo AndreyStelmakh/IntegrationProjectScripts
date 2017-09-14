@@ -32,7 +32,7 @@ begin
   where ( [Date] < @EndDate or @EndDate is null )
     and ( @BeginDate <= [Date] or @BeginDate is null )
     and Doc_Str in( '–еализаци€“оваров”слуг (расход)',
-                    '–асходныйќрдерЌа“овары (расход)',
+                   -- '–асходныйќрдерЌа“овары (расход)',
                     'ќтчетќ–озничныхѕродажах (расход)' )
   group by ID_Shop, ID_SKU;
 

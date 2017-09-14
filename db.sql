@@ -42,7 +42,8 @@ CREATE TABLE [dbo].[Movement](
   [Kol] [int] NULL,
   [ID_Shop_2] uniqueidentifier NULL,
   [Order] nvarchar(15),
-	[Sum] [decimal](18, 4) NULL
+	[Sum] [decimal](18, 4) NULL,
+  Discount as ([RetailPrice]*[NSales]-[SalesSum]),
 ) ON [PRIMARY]
 Go
 

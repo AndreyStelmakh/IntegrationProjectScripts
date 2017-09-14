@@ -1,6 +1,6 @@
 
 
-create procedure dbo.scrpt_Report1
+alter procedure dbo.scrpt_Report1
 as
 
 -- Sales rate
@@ -27,8 +27,8 @@ insert into @ оличестваѕродаж
 select [Year], [WeekNumber], Articul, A_Color, sum(-t.Kol)
 from( select m.ID_SKU, m.ID_Shop, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(week, m.Date)
       from dbo.Movement m
-      where Doc_Str in ( 'ќтчетќ–озничныхѕродажах (расход)', '–еализаци€“оваров”слуг (расход)',
-                         '¬озврат“оваровќт лиента (приход)' ) ) t
+            where Doc_Str in ( 'ќтчетќ–озничныхѕродажах (расход)', '–еализаци€“оваров”слуг (расход)',
+                               '¬озврат“оваровќт лиента (приход)' ) ) t
   inner join dbo.SKU u on u.ID_SKU = t.ID_SKU
 group by [Year], [WeekNumber], u.Articul, u.A_Color
 ------------------------------------------------------------------------------

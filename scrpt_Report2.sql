@@ -1,8 +1,8 @@
 
 
-create procedure dbo.scrpt_Report2
-as
---use Reports
+--create procedure dbo.scrpt_Report2
+--as
+----use Reports
 
 declare @WeekDates table( [Year] smallint, [Week] smallint, BeginDate datetime2(4), EndDate datetime2(4));
 
@@ -52,7 +52,7 @@ using( select wd.[Year],
               sl.ID_SKU,
               sl.Quantity
        from @WeekDates wd
-         outer apply dbo.udf_SKUsStockLeftoverOnDate(wd.BeginDate) sl ) as sc
+         outer apply dbo.udf_SKUsStockLeftoverOnDate(wd.EndDate) sl ) as sc
 on( tg.Year = sc.Year
 and tg.[WeekNumber] = sc.[Week]
 and tg.ID_Shop = sc.ID_Shop
