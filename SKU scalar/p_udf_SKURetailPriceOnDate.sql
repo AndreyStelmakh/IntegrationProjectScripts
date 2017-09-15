@@ -36,7 +36,6 @@ BEGIN
   where ID_Price = @ID_Price_Retail
     and [Date] < @Date
     and ID_SKU = @ID_SKU
-    and ID_Price = @ID_Price_Retail
   order by [Date] desc;
 
 	return @Price

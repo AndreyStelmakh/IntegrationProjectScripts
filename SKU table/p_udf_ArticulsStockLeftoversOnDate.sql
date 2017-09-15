@@ -20,7 +20,7 @@ begin
          Quantity = sum(Kol)
   from dbo.Movement m
     inner join dbo.SKU u on u.ID_SKU = m.ID_SKU
-  where [Date] < @date
+  where [Date] <= @date
     and ( @ID_Shop is null or @ID_Shop = ID_Shop )
   group by ID_Shop, Articul, A_Color;
 

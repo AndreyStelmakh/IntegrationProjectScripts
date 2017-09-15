@@ -5,6 +5,7 @@ as
 
 -- Sales rate
 --------------------------------------------------
+declare @DepthDays int = 360;
 
 declare @Shops table(ID uniqueidentifier);
 insert into @Shops values('2CE04A70-3ACC-11E7-80DE-000C2915D7B8');
@@ -41,7 +42,7 @@ declare @ShopsWithLeftovers table ( Year smallint, [WeekNumber] smallint,
 insert into @ShopsWithLeftovers
 select [Year], [WeekNumber], Articul, A_Color,
        sum(case when Quantity > 0 then 1 else 0 end)
-from dbo.udf_WeekBeginEndDates(GetDate()-365, GetDate())
+from dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
 outer apply dbo.udf_ArticulsStockLeftoversOnDate(EndDate, null) sl
   inner join @Shops sh on sh.ID = ID_Shop
 group by [Year], [WeekNumber], Articul, A_Color;
@@ -56,7 +57,7 @@ declare @ќстаткиЌаЌачалаЌедель
 insert into @ќстаткиЌаЌачалаЌедель
 select [Year], WeekNumber, Articul, A_Color,
        Quantity = sum(case when Quantity > 0 then Quantity else 0 end)
-from dbo.udf_WeekBeginEndDates(GetDate()-365, GetDate())
+from dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
   outer apply dbo.udf_ArticulsStockLeftoversOnDate(BeginDate, null)
     inner join @Shops sh on sh.ID = ID_Shop
 group by [Year], WeekNumber, Articul, A_Color
@@ -71,7 +72,7 @@ declare @ќстаткиЌаќкончани€Ќедель
 insert into @ќстаткиЌаќкончани€Ќедель
 select [Year], WeekNumber, Articul, A_Color,
        Quantity = sum(case when Quantity > 0 then Quantity else 0 end)
-from dbo.udf_WeekBeginEndDates(GetDate()-365, GetDate())
+from dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
   outer apply dbo.udf_ArticulsStockLeftoversOnDate(EndDate, null) sl
     inner join @Shops sh on sh.ID = ID_Shop
 group by [Year], WeekNumber, Articul, A_Color
@@ -128,7 +129,7 @@ delete from @ShopsWithLeftovers;
 
 insert into dbo._Report1 ([Year], WeekNumber, ReportType, Articul, A_Color, [Value])
 select [Year], [WeekNumber], '–озн.цена', Articul, A_Color, f.Price
-from dbo.udf_WeekBeginEndDates(GetDate()-365, GetDate())
+from dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
   outer apply dbo.udf_ArticulsRetailPricesOnDate(BeginDate) f;
 
 

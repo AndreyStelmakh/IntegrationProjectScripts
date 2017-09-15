@@ -218,6 +218,17 @@ CREATE TABLE dbo.[_Report2](
 GO
 
 
+-- помогает при вычислении остатков на указанную дату
+CREATE NONCLUSTERED INDEX [IX_Movement_Date_incl_] ON [dbo].[Movement]
+(
+	[Date] ASC
+)
+INCLUDE ( [ID_Shop],
+	        [ID_SKU],
+	        [Kol],
+	        [Sum]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
 
 CREATE NONCLUSTERED INDEX [IX_Movement_Doc_Str_incl_Date_ID_SKU_Kol] ON [dbo].[Movement]
 (
@@ -228,6 +239,7 @@ INCLUDE (
   [Date],
 	[Kol]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO
+
 
 
 
