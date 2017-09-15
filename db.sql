@@ -186,8 +186,7 @@ Go
 CREATE TABLE dbo.[Orders](
 	OrderNumber nvarchar(25),
   [Date] datetime2(4),
-  ID_SKU uniqueidentifier,
-  ID_Shop uniqueidentifier,
+  Articul nvarchar(60),
 	Quantity integer,
 	PurchasePrice decimal(18,4),
 ) ON [PRIMARY]
