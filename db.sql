@@ -191,6 +191,15 @@ CREATE TABLE dbo.[Orders](
 	PurchasePrice decimal(18,4),
 ) ON [PRIMARY]
 Go
+CREATE TABLE [dbo].[OrdersFact](
+	[OrderNumber] [nvarchar](25) NULL,
+	[Date] [datetime2](4) NULL,
+	[Articul] [nvarchar](60) NULL,
+	[Quantity] [int] NULL,
+	[PurchasePrice] [decimal](18, 4) NULL
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [dbo].[_Report1](
 	[Year] [smallint] NULL,
 	[WeekNumber] [smallint] NULL,
