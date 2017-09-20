@@ -1,7 +1,7 @@
 
 
-alter procedure dbo.scrpt_Report1
-as
+--alter procedure dbo.scrpt_Report1
+--as
 
 -- Sales rate
 --------------------------------------------------
