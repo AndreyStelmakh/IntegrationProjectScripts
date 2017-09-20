@@ -46,7 +46,8 @@ when matched then
 when not matched then
   insert( Year, WeekNumber, ID_Shop, ID_SKU, NSales, SalesSum )
   values( sc.Year, sc.Week, sc.ID_Shop, sc.ID_SKU, sc.NSales, sc.SalesSum );
-print '010'
+
+
 merge dbo.[_Report2] as tg
 using( select wd.[Year],
               wd.[Week],
@@ -64,7 +65,6 @@ when matched then
 when not matched then
   insert( Year, WeekNumber, ID_Shop, ID_SKU, Leftover )
   values( sc.Year, sc.Week, sc.ID_Shop, sc.ID_SKU, sc.Quantity );
-print '020'
 
 
 declare @Prices table( [Year] smallint, [Week] smallint,
