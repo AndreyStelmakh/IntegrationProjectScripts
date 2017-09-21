@@ -14,7 +14,7 @@ begin
   begin
 
     insert into @Result
-    values ( Year(@Date), datepart(wk, @Date), @Date, dateadd(d, 7, @Date) );
+    values ( Year(@Date), datepart(ISO_WEEK, @Date), @Date, dateadd(d, 7, @Date) );
 
     set @Date = dateadd(d, 7, @Date);
 
