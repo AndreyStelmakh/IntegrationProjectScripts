@@ -30,6 +30,36 @@ where Price is null
 --  and pl.ID_Price not in( @ID_Price_Purchase );
 
 
+
+
+declare @EmptySKUCount int;
+
+select @EmptySKUCount = count(1)
+from dbo.Movement m
+left join dbo.SKU u on u.ID_SKU = m.ID_SKU
+where u.ID_SKU is null
+
+declare @xmlData xml;
+set @xmlData = (
+select SKU_Count = @SKU_Count,
+       SKU_wo_price = @SKU_wo_price,
+       SKU_wo_purchase_price = @SKU_wo_purchase_price,
+       SKU_wo_retail_price = @SKU_wo_retail_price,
+       (select max([Date]) from dbo.Movement) as [MaxДатаДвижений],
+       (select count(1) from dbo.Movement) as [ВсегоДвижений],
+       @EmptySKUCount as [ОтсутствуетвНоменклатуре]
+for xml raw);
+
+insert into Monitor.Journal ([Data]) values (@xmlData);
+
+select SKU_Count = @SKU_Count,
+       SKU_wo_price = @SKU_wo_price,
+       SKU_wo_purchase_price = @SKU_wo_purchase_price,
+       SKU_wo_retail_price = @SKU_wo_retail_price,
+       (select max([Date]) from dbo.Movement) as [MaxДатаДвижений],
+       (select count(1) from dbo.Movement) as [ВсегоДвижений],
+       @EmptySKUCount as [ОтсутствуетвНоменклатуре]
+
 select distinct u.Prop_Proekt, u.Articul as [с розничной ценой что-то не то]
 from dbo.SKU u
   left join dbo.PriceList pl on u.ID_SKU = pl.ID_SKU
@@ -45,10 +75,3 @@ where Price is null
   and Prop_Proekt in ( 'PRICETIME', 'ONEWAY' )
   and (pl.ID_Price not in( @ID_Price_Retail )
     or pl.ID_Price is null);
-
-select SKU_Count = @SKU_Count,
-       SKU_wo_price = @SKU_wo_price,
-       SKU_wo_purchase_price = @SKU_wo_purchase_price,
-       SKU_wo_retail_price = @SKU_wo_retail_price,
-       (select max([Date]) from dbo.Movement) as [Max дата движений],
-       (select count(1) from dbo.Movement) as [Всего движений];

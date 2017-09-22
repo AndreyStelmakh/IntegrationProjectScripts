@@ -148,6 +148,18 @@ CREATE TABLE [dbo].[SKU](
 ) ON [PRIMARY]
 GO
 
+
+CREATE TABLE [Monitor].[Journal](
+	[CheckedAt] [datetime2](4) NOT NULL,
+	[Data] [xml] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [Monitor].[Journal] ADD  CONSTRAINT [DF_Journal_CheckedAt]  DEFAULT (getdate()) FOR [CheckedAt]
+GO
+
+
+
 CREATE UNIQUE CLUSTERED INDEX [PK_SKU] ON [dbo].[SKU]
 (
 	[ID_SKU] ASC
