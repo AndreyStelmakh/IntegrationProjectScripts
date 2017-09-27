@@ -6,11 +6,14 @@
 
 set datefirst 1
 
+declare @BeginDate datetime;
+set @BeginDate = cast(year(GetDate()) as nvarchar(5)) + '01' + '01';
+
 declare @WeekDates table( [Year] smallint, [Week] smallint, BeginDate datetime2(4), EndDate datetime2(4));
 
 insert into @WeekDates
 select *
-from dbo.udf_WeekBeginEndDates(GetDate() - 30, GetDate()) t
+from dbo.udf_WeekBeginEndDates(@BeginDate, GetDate()) t
 --------------------------------------------------------------------------------
 
 declare @Shops table(ID_Shop uniqueidentifier);
