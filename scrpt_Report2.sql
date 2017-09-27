@@ -10,10 +10,7 @@ declare @BeginDate datetime;
 set @BeginDate = cast(year(GetDate()) as nvarchar(5)) + '01' + '01';
 
 declare @WeekDates table( [Year] smallint, [Week] smallint, BeginDate datetime2(4), EndDate datetime2(4));
-
-insert into @WeekDates
-select *
-from dbo.udf_WeekBeginEndDates(@BeginDate, GetDate()) t
+insert into @WeekDates select * from dbo.udf_WeekBeginEndDates(@BeginDate, GetDate()) t
 --------------------------------------------------------------------------------
 
 declare @Shops table(ID_Shop uniqueidentifier);
@@ -22,10 +19,6 @@ insert into @Shops values('CB2B30C2-CB24-11E6-941E-000C29ECCF5C');  -- PriceTime
 insert into @Shops values('24A37A2D-B08C-11E6-94E4-00155D462702');  -- PriceTime Дмитровка
 insert into @Shops values('587093CA-55A8-11E7-BE20-B499BABE0386');  -- OneWay Райкин Плаза
 insert into @Shops values('24A37A2E-B08C-11E6-94E4-00155D462702');  -- OneWay Дмитровка
-
-declare @ShopsAndStores table(ID_Shop uniqueidentifier);
-insert into @ShopsAndStores select * from @Shops;
-insert into @ShopsAndStores values('8374421C-7199-11E6-B63C-0002C9E8F1B0'); -- Центральный
 --------------------------------------------------------------------------------
 
 truncate table dbo._Report2
@@ -58,7 +51,9 @@ using( select wd.[Year],
               sl.ID_SKU,
               sl.Quantity
        from @WeekDates wd
-         cross apply dbo.udf_SKUsStockLeftoverOnDate(wd.EndDate) sl ) as sc
+         cross apply dbo.udf_SKUsStockLeftoverOnDate(wd.EndDate) sl
+         -- фильтрация только нужными магазинами
+         inner join @Shops sh on sl.ID_Shop = sh.ID_Shop) as sc
 on( tg.Year = sc.Year
 and tg.[WeekNumber] = sc.[Week]
 and tg.ID_Shop = sc.ID_Shop
