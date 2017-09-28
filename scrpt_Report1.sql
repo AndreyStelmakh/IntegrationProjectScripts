@@ -1,7 +1,7 @@
 
 
---alter procedure dbo.scrpt_Report1
---as
+alter procedure dbo.scrpt_Report1
+as
 
 -- Sales rate
 --------------------------------------------------
@@ -26,88 +26,88 @@ declare @КоличестваПродаж table( [Year] smallint, [WeekNumber] smallint,
                                  [Count] decimal(9,2),
                                  index ix clustered(Year, WeekNumber, Articul, A_Color) );
 insert into @КоличестваПродаж
-select [Year], [WeekNumber], Articul, A_Color, sum(-t.Kol)
-from( select m.ID_SKU, m.ID_Shop, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(week, m.Date)
+select w.[Year], w.[WeekNumber], Articul, A_Color, sum(-t.Kol)
+from( select m.ID_SKU, m.ID_Shop, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(ISO_WEEK, m.Date)
       from dbo.Movement m
             where Doc_Str in ( 'ОтчетОРозничныхПродажах (расход)', 'РеализацияТоваровУслуг (расход)',
                                'ВозвратТоваровОтКлиента (приход)' ) ) t
   inner join dbo.SKU u on u.ID_SKU = t.ID_SKU
-group by [Year], [WeekNumber], u.Articul, u.A_Color
+  inner join @Weeks w on w.[Year] = t.[Year] and w.WeekNumber = t.WeekNumber
+group by w.[Year], w.[WeekNumber], u.Articul, u.A_Color
 ------------------------------------------------------------------------------
 
 declare @ShopsWithLeftovers table ( Year smallint, [WeekNumber] smallint,
-                                    --ID_SKU uniqueidentifier,
                                     Articul nvarchar(60), A_Color nvarchar(100),
                                     ShopCount decimal(9,2),
                                     index ix clustered (Year, WeekNumber, Articul, A_Color) );
 insert into @ShopsWithLeftovers
 select [Year], [WeekNumber], Articul, A_Color,
        sum(case when Quantity > 0 then 1 else 0 end)
-from @Weeks--dbo.udf_WeekBeginEndDates(@BeginDate, GetDate())
+from @Weeks
 outer apply dbo.udf_ArticulsStockLeftoversOnDate(EndDate, null) sl
   inner join @Shops sh on sh.ID = ID_Shop
 group by [Year], [WeekNumber], Articul, A_Color;
 -------------------------------------------------------------------------
 
-declare @ОстаткиНаНачалаНедель
-  table( [Year] smallint, WeekNumber smallint,
-         --ID_SKU uniqueidentifier,
-         Articul nvarchar(60), A_Color nvarchar(100),
-         Quantity decimal(9,1),
-         index ix clustered ([Year], WeekNumber, Articul, A_Color));
-insert into @ОстаткиНаНачалаНедель
-select [Year], WeekNumber, Articul, A_Color,
-       Quantity = sum(case when Quantity > 0 then Quantity else 0 end)
-from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
-  outer apply dbo.udf_ArticulsStockLeftoversOnDate(BeginDate, null)
-    inner join @Shops sh on sh.ID = ID_Shop
-group by [Year], WeekNumber, Articul, A_Color
-----------------------------------------------------------------------------
+--declare @ОстаткиНаНачалаНедель
+--  table( [Year] smallint, WeekNumber smallint,
+--         --ID_SKU uniqueidentifier,
+--         Articul nvarchar(60), A_Color nvarchar(100),
+--         Quantity decimal(9,1),
+--         index ix clustered ([Year], WeekNumber, Articul, A_Color));
+--insert into @ОстаткиНаНачалаНедель
+--select [Year], WeekNumber, Articul, A_Color,
+--       Quantity = sum(case when Quantity > 0 then Quantity else 0 end)
+--from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
+--  outer apply dbo.udf_ArticulsStockLeftoversOnDate(BeginDate, null)
+--    inner join @Shops sh on sh.ID = ID_Shop
+--group by [Year], WeekNumber, Articul, A_Color
+------------------------------------------------------------------------------
 
-declare @ОстаткиНаОкончанияНедель
-  table( [Year] smallint, WeekNumber smallint,
-         --ID_SKU uniqueidentifier,
-         Articul nvarchar(60), A_Color nvarchar(100),
-         Quantity decimal(9,1),
-         index ix clustered ([Year], WeekNumber, Articul, A_Color));
-insert into @ОстаткиНаОкончанияНедель
-select [Year], WeekNumber, Articul, A_Color,
-       Quantity = sum(case when Quantity > 0 then Quantity else 0 end)
-from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
-  outer apply dbo.udf_ArticulsStockLeftoversOnDate(EndDate, null) sl
-    inner join @Shops sh on sh.ID = ID_Shop
-group by [Year], WeekNumber, Articul, A_Color
+--declare @ОстаткиНаОкончанияНедель
+--  table( [Year] smallint, WeekNumber smallint,
+--         --ID_SKU uniqueidentifier,
+--         Articul nvarchar(60), A_Color nvarchar(100),
+--         Quantity decimal(9,1),
+--         index ix clustered ([Year], WeekNumber, Articul, A_Color));
+--insert into @ОстаткиНаОкончанияНедель
+--select [Year], WeekNumber, Articul, A_Color,
+--       Quantity = sum(case when Quantity > 0 then Quantity else 0 end)
+--from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
+--  outer apply dbo.udf_ArticulsStockLeftoversOnDate(EndDate, null) sl
+--    inner join @Shops sh on sh.ID = ID_Shop
+--group by [Year], WeekNumber, Articul, A_Color
 ----------------------------------------------------------------------------
 
 truncate table dbo._Report1;
 
-insert into dbo._Report1 ([Year], WeekNumber, ReportType, Articul, A_Color, [Value])
-select t.Year, t.WeekNumber, 'Обор-мость', Articul, A_Color, sum([Value]) as [Value]
-from ( select lf.[Year],
-              lf.[WeekNumber],
-              lf.Articul,
-              lf.A_Color,
-              [Value] = case when sl.[Count] > 0 then MeanQ / sl.[Count] else null end
-       from( select [Year] = isnull(tin.Year, tout.Year),
-                    [WeekNumber] = isnull(tin.WeekNumber, tout.WeekNumber),
-                    Articul = isnull(tin.Articul, tout.Articul),
-                    A_Color = isnull(tin.A_Color, tout.A_Color),
-                    MeanQ = (isnull(tin.Quantity, 0) + isnull(tout.Quantity, 0))/2
-             from @ОстаткиНаНачалаНедель tin
-               full join @ОстаткиНаОкончанияНедель tout on tout.Year = tin.Year
-                                                       and tout.WeekNumber = tin.WeekNumber
-                                                       and tout.Articul = tin.Articul
-                                                       and tout.A_Color = tin.A_Color ) lf
-         left join @КоличестваПродаж sl on sl.[Year] = lf.[Year]
-                                       and sl.WeekNumber = lf.WeekNumber
-                                       and sl.Articul = lf.Articul
-                                       and sl.A_Color = lf.A_Color ) t
-group by t.Year, t.WeekNumber, Articul, A_Color
+--insert into dbo._Report1 ([Year], WeekNumber, ReportType, Articul, A_Color, [Value])
+--select t.Year, t.WeekNumber, 'Обор-мость', Articul, A_Color, sum([Value]) as [Value]
+--from ( select lf.[Year],
+--              lf.[WeekNumber],
+--              lf.Articul,
+--              lf.A_Color,
+--              [Value] = case when sl.[Count] > 0 then MeanQ / sl.[Count] else null end
+--       from( select [Year] = isnull(tin.Year, tout.Year),
+--                    [WeekNumber] = isnull(tin.WeekNumber, tout.WeekNumber),
+--                    Articul = isnull(tin.Articul, tout.Articul),
+--                    A_Color = isnull(tin.A_Color, tout.A_Color),
+--                    MeanQ = (isnull(tin.Quantity, 0) + isnull(tout.Quantity, 0))/2
+--             from @ОстаткиНаНачалаНедель tin
+--               full join @ОстаткиНаОкончанияНедель tout on tout.Year = tin.Year
+--                                                       and tout.WeekNumber = tin.WeekNumber
+--                                                       and tout.Articul = tin.Articul
+--                                                       and tout.A_Color = tin.A_Color ) lf
+--         left join @КоличестваПродаж sl on sl.[Year] = lf.[Year]
+--                                       and sl.WeekNumber = lf.WeekNumber
+--                                       and sl.Articul = lf.Articul
+--                                       and sl.A_Color = lf.A_Color ) t
+--group by t.Year, t.WeekNumber, Articul, A_Color
 
--------------------------------------------------------------------------
+---------------------------------------------------------------------------
 
-delete from @ОстаткиНаНачалаНедель;
-delete from @ОстаткиНаОкончанияНедель;
+--delete from @ОстаткиНаНачалаНедель;
+--delete from @ОстаткиНаОкончанияНедель;
 -------------------------------------------------------------------------
 
 
@@ -124,14 +124,14 @@ from(
               and sl.Articul = pch.Articul and sl.A_Color = pch.A_Color ) x
 --------------------------------------------------------------------------------------------------------
 
-delete from @КоличестваПродаж;
-delete from @ShopsWithLeftovers;
------------------------------------------------------------------------------------------------------------
+--delete from @КоличестваПродаж;
+--delete from @ShopsWithLeftovers;
+-------------------------------------------------------------------------------------------------------------
 
-insert into dbo._Report1 ([Year], WeekNumber, ReportType, Articul, A_Color, [Value])
-select [Year], [WeekNumber], 'Розн.цена', Articul, A_Color, f.Price
-from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
-  outer apply dbo.udf_ArticulsRetailPricesOnDate(BeginDate) f;
+--insert into dbo._Report1 ([Year], WeekNumber, ReportType, Articul, A_Color, [Value])
+--select [Year], [WeekNumber], 'Розн.цена', Articul, A_Color, f.Price
+--from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
+--  outer apply dbo.udf_ArticulsRetailPricesOnDate(BeginDate) f;
 
 
 

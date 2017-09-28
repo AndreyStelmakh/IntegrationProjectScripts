@@ -1,7 +1,7 @@
 
 
---create procedure dbo.scrpt_Report2
---as
+alter procedure dbo.scrpt_Report2
+as
 ----use Reports
 
 set datefirst 1
@@ -31,7 +31,9 @@ using( select wd.[Year],
               NSales = -sl.Quantity,
               SalesSum = -sl.[SalesSum]
        from @WeekDates wd
-         cross apply dbo.udf_SKUsSalesForPeriod(wd.BeginDate, wd.EndDate) sl ) as sc
+         cross apply dbo.udf_SKUsSalesForPeriod(wd.BeginDate, wd.EndDate) sl
+         -- фильтрация только нужными магазинами
+         inner join @Shops sh on sl.ID_Shop = sh.ID_Shop ) as sc
 on( tg.Year = sc.Year
 and tg.[WeekNumber] = sc.[Week]
 and tg.ID_Shop = sc.ID_Shop
