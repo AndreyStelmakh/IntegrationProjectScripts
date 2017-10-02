@@ -22,18 +22,19 @@ insert into @ShopsAndStores values('8374421C-7199-11E6-B63C-0002C9E8F1B0');
 
 declare @КоличестваПродаж table( [Year] smallint, [WeekNumber] smallint,
                                  --ID_SKU uniqueidentifier,
+                                 ID_Articul uniqueidentifier,
                                  Articul nvarchar(60), A_Color nvarchar(100),
                                  [Count] decimal(9,2),
                                  index ix clustered(Year, WeekNumber, Articul, A_Color) );
 insert into @КоличестваПродаж
-select w.[Year], w.[WeekNumber], Articul, A_Color, sum(-t.Kol)
+select w.[Year], w.[WeekNumber], u.ID_Articul, Articul, A_Color, sum(-t.Kol)
 from( select m.ID_SKU, m.ID_Shop, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(ISO_WEEK, m.Date)
       from dbo.Movement m
             where Doc_Str in ( 'ОтчетОРозничныхПродажах (расход)', 'РеализацияТоваровУслуг (расход)',
                                'ВозвратТоваровОтКлиента (приход)' ) ) t
   inner join dbo.SKU u on u.ID_SKU = t.ID_SKU
   inner join @Weeks w on w.[Year] = t.[Year] and w.WeekNumber = t.WeekNumber
-group by w.[Year], w.[WeekNumber], u.Articul, u.A_Color
+group by w.[Year], w.[WeekNumber], u.ID_Articul, u.Articul, u.A_Color
 ------------------------------------------------------------------------------
 
 declare @ShopsWithLeftovers table ( Year smallint, [WeekNumber] smallint,
@@ -111,12 +112,12 @@ truncate table dbo._Report1;
 -------------------------------------------------------------------------
 
 
-insert into dbo._Report1 ([Year], WeekNumber, ReportType, Articul, A_Color, [Value])
+insert into dbo._Report1 ([Year], WeekNumber, ReportType, ID_Articul, Articul, A_Color, [Value])
 select Year, WeekNumber, 'Скор.продаж',
-       Articul, A_Color,
+       ID_Articul, Articul, A_Color,
        SaleRate = case when SaleRate >= 0.01 then SaleRate else null end
 from(
-      select pch.Year, pch.WeekNumber, pch.Articul, pch.A_Color,
+      select pch.Year, pch.WeekNumber, pch.ID_Articul, pch.Articul, pch.A_Color,
              SaleRate = cast(case when sl.ShopCount > 0 then pch.[Count] / sl.ShopCount else 0 end as decimal(9,1))
 
       from @КоличестваПродаж pch

@@ -212,6 +212,15 @@ CREATE TABLE [dbo].[OrdersFact](
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[Articuls](
+	[ID_Articul] [uniqueidentifier] NOT NULL,
+	[Articul] [nvarchar](60) NULL,
+	[ImageUrl] [nvarchar](200) NULL
+) ON [PRIMARY]
+GO
+
+
+
 CREATE TABLE [dbo].[_Report1](
 	[Year] [smallint] NULL,
 	[WeekNumber] [smallint] NULL,
@@ -219,7 +228,8 @@ CREATE TABLE [dbo].[_Report1](
 	[ReportType] [nvarchar](15) NULL,
 	[Value] [decimal](9, 1) NULL,
 	[Articul] [nvarchar](60) NULL,
-	[A_Color] [nvarchar](100) NULL
+	[A_Color] [nvarchar](100) NULL,
+  [ID_Articul] [uniqueidentifier] NULL
 ) ON [PRIMARY]
 GO
 
