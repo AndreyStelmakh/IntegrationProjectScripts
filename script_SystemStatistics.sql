@@ -43,6 +43,7 @@ where u.ID_SKU is null
 declare @xmlData xml;
 set @xmlData = (
 select SKU_Count = @SKU_Count,
+       Articuls_Count = (select count(1) from dbo.Articuls),
        SKU_wo_price = @SKU_wo_price,
        SKU_wo_purchase_price = @SKU_wo_purchase_price,
        SKU_wo_retail_price = @SKU_wo_retail_price,
