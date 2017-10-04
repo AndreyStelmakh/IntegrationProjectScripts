@@ -1,6 +1,6 @@
 
 
-alter procedure dbo.scrpt_Report2
+alter procedure dbo.script_Report2
 as
 ----use Reports
 
@@ -83,3 +83,14 @@ set RetailPrice = p.RetailPrice,
     PurchasePrice = p.PurchasePrice
 from dbo._Report2 s
   inner join @Prices p on p.Year = s.Year and p.Week = s.WeekNumber and p.ID_SKU = s.ID_SKU
+
+
+insert into Monitor.Journal (Data) values (
+'<complete item="report2"
+           rows="' + cast((select count(1) from dbo._Report2) as nvarchar(max)) + '"
+           datefirst="' + cast(@@DATEFIRST as nvarchar(max)) + '" />')
+
+
+
+
+

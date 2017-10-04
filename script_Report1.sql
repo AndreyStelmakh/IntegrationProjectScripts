@@ -1,7 +1,9 @@
 
 
-alter procedure dbo.scrpt_Report1
+alter procedure dbo.script_Report1
 as
+
+set datefirst 1
 
 -- Sales rate
 --------------------------------------------------
@@ -28,7 +30,7 @@ declare @КоличестваПродаж table( [Year] smallint, [WeekNumber] smallint,
                                  index ix clustered(Year, WeekNumber, Articul, A_Color) );
 insert into @КоличестваПродаж
 select w.[Year], w.[WeekNumber], u.ID_Articul, Articul, A_Color, sum(-t.Kol)
-from( select m.ID_SKU, m.ID_Shop, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(ISO_WEEK, m.Date)
+from( select m.ID_SKU, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(ISO_WEEK, m.Date)
       from dbo.Movement m
             where Doc_Str in ( 'ОтчетОРозничныхПродажах (расход)', 'РеализацияТоваровУслуг (расход)',
                                'ВозвратТоваровОтКлиента (приход)' ) ) t
@@ -133,6 +135,11 @@ from(
 --select [Year], [WeekNumber], 'Розн.цена', Articul, A_Color, f.Price
 --from @Weeks --dbo.udf_WeekBeginEndDates(GetDate()-@DepthDays, GetDate())
 --  outer apply dbo.udf_ArticulsRetailPricesOnDate(BeginDate) f;
+
+insert into Monitor.Journal (Data) values (
+'<complete item="report1"
+           rows="' + cast((select count(1) from dbo._Report1) as nvarchar(max)) + '"
+           datefirst="' + cast(@@DATEFIRST as nvarchar(max)) + '" />')
 
 
 
