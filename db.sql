@@ -219,6 +219,12 @@ CREATE TABLE [dbo].[Articuls](
 ) ON [PRIMARY]
 GO
 
+-- јнтон добавл€ет записи без проверки на униальность. ѕроблема "задвоени€" решаетс€ этим индексом
+CREATE UNIQUE NONCLUSTERED INDEX [IX_Articuls] ON [dbo].[Articuls]
+(
+	[ID_Articul] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = ON, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
 
 
 CREATE TABLE [dbo].[_Report1](

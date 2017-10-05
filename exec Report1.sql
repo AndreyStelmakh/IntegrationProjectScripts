@@ -1,5 +1,5 @@
 
 
-EXEC scrpt_Report1
+EXEC script_Report1
 
 

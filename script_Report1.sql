@@ -32,7 +32,7 @@ insert into @ оличестваѕродаж
 select w.[Year], w.[WeekNumber], u.ID_Articul, Articul, A_Color, sum(-t.Kol)
 from( select m.ID_SKU, m.Kol, [Year] = year(m.Date) , [WeekNumber] = datepart(ISO_WEEK, m.Date)
       from dbo.Movement m
-            where Doc_Str in ( 'ќтчетќ–озничныхѕродажах (расход)', '–еализаци€“оваров”слуг (расход)',
+            where Doc_Str in ( 'ќтчетќ–озничныхѕродажах (расход)', --'–еализаци€“оваров”слуг (расход)',
                                '¬озврат“оваровќт лиента (приход)' ) ) t
   inner join dbo.SKU u on u.ID_SKU = t.ID_SKU
   inner join @Weeks w on w.[Year] = t.[Year] and w.WeekNumber = t.WeekNumber
