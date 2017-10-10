@@ -16,6 +16,8 @@ insert into @Shops values('CB2B30C2-CB24-11E6-941E-000C29ECCF5C');
 insert into @Shops values('24A37A2D-B08C-11E6-94E4-00155D462702');
 insert into @Shops values('587093CA-55A8-11E7-BE20-B499BABE0386');
 insert into @Shops values('24A37A2E-B08C-11E6-94E4-00155D462702');
+insert into @Shops values('B4B810DB-A4F3-11E7-8E41-B499BABE0386');  -- ONEWAY Филион
+
 
 declare @ShopsAndStores table(ID uniqueidentifier);
 insert into @ShopsAndStores select * from @Shops;

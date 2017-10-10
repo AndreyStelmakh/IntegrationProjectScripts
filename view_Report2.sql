@@ -9,9 +9,9 @@ SELECT        cast(s.ID_SKU as nvarchar(40)) ID_SKU, u.Articul, s.Year, s.WeekNu
               u.Prop_Podkat, u.A_Color, u.A_Size,
               s.NSales, s.SalesSum,
               s.LeftoverMargin, s.Leftover AS LeftoverMix,
-              Discount, s.Margin
+              Discount, s.Margin,
+              u.Prop_Proizvoditel, u.Prop_Strana
 FROM            dbo._Report2 AS s INNER JOIN
                          dbo.SKU AS u ON u.ID_SKU = s.ID_SKU INNER JOIN
                          dbo.Shops AS sh ON sh.ID_Shop = s.ID_Shop
 GO
-

@@ -1,4 +1,7 @@
 
+
+-- Поиск хитов продаж
+
 declare @minLength int = 30,
         @speedLim decimal(18, 4) = 1;
 
