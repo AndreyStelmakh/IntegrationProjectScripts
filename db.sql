@@ -198,7 +198,8 @@ Go
 CREATE TABLE dbo.[Orders](
 	OrderNumber nvarchar(25),
   [Date] datetime2(4),
-  Articul nvarchar(60),
+  [Model] nvarchar(30),
+  [Articul] nvarchar(60),
 	Quantity integer,
 	PurchasePrice decimal(18,4),
 ) ON [PRIMARY]
@@ -206,6 +207,7 @@ Go
 CREATE TABLE [dbo].[OrdersFact](
 	[OrderNumber] [nvarchar](25) NULL,
 	[Date] [datetime2](4) NULL,
+  [Model] nvarchar(30),
 	[Articul] [nvarchar](60) NULL,
 	[Quantity] [int] NULL,
 	[PurchasePrice] [decimal](18, 4) NULL
