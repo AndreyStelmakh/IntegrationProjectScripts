@@ -256,6 +256,16 @@ CREATE TABLE dbo.[_Report2](
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [dbo].[_Report3](
+	[OrderNumber] [nvarchar](25) NULL,
+	[Model] [nvarchar](30) NULL,
+	[Articul] [nvarchar](60) NULL,
+	[SumPurchasePricePlan] [decimal](18, 4) NULL,
+	[SumPurchasePriceFact] [decimal](18, 4) NULL,
+	[SumQuantityPlan] [int] NULL,
+	[SumQuantityFact] [int] NULL
+) ON [PRIMARY]
+GO
 
 -- помогает при вычислении остатков на указанную дату
 CREATE NONCLUSTERED INDEX [IX_Movement_Date_incl_] ON [dbo].[Movement]
